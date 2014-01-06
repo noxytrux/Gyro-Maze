@@ -1,0 +1,17 @@
+{
+  "uuid": "5356fc84-395d-4092-ac51-54f61e0879d7",
+  "shortName": "GyroMaze",
+  "longName": "GyroMaze",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
