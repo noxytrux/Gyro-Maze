@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0404881818D47C7400C1609E /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = 0404881718D47C7400C1609E /* common.c */; };
+		0404881C18D47D2500C1609E /* mazegeneration.c in Sources */ = {isa = PBXBuildFile; fileRef = 0404881B18D47D2500C1609E /* mazegeneration.c */; };
 		04518E90184E1CF700BA65AF /* GyroMaze.c in Sources */ = {isa = PBXBuildFile; fileRef = 04518E8F184E1CF700BA65AF /* GyroMaze.c */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0404881718D47C7400C1609E /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common.c; path = src/common.c; sourceTree = SOURCE_ROOT; };
+		0404881918D47C8700C1609E /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = SOURCE_ROOT; };
+		0404881A18D47CD900C1609E /* mazegeneration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mazegeneration.h; path = src/mazegeneration.h; sourceTree = SOURCE_ROOT; };
+		0404881B18D47D2500C1609E /* mazegeneration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mazegeneration.c; path = src/mazegeneration.c; sourceTree = SOURCE_ROOT; };
 		04518E8F184E1CF700BA65AF /* GyroMaze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GyroMaze.c; path = src/GyroMaze.c; sourceTree = SOURCE_ROOT; };
 		0491966D184E1B300047EA9A /* GyroMaze */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GyroMaze; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -58,6 +64,10 @@
 			isa = PBXGroup;
 			children = (
 				04518E8F184E1CF700BA65AF /* GyroMaze.c */,
+				0404881918D47C8700C1609E /* common.h */,
+				0404881718D47C7400C1609E /* common.c */,
+				0404881A18D47CD900C1609E /* mazegeneration.h */,
+				0404881B18D47D2500C1609E /* mazegeneration.c */,
 			);
 			path = GyroMaze;
 			sourceTree = "<group>";
@@ -113,6 +123,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0404881818D47C7400C1609E /* common.c in Sources */,
+				0404881C18D47D2500C1609E /* mazegeneration.c in Sources */,
 				04518E90184E1CF700BA65AF /* GyroMaze.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,7 +206,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"~/pebble-dev/PebbleSDK-2.0-BETA1/Pebble/include",
+					"~/pebble-dev/PebbleSDK-current/Pebble/include",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -206,7 +218,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"~/pebble-dev/PebbleSDK-2.0-BETA1/Pebble/include",
+					"~/pebble-dev/PebbleSDK-current/Pebble/include",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

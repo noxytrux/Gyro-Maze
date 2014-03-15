@@ -9,76 +9,80 @@
 //  i tried to do it fun :) but it was hard to achieve good physic at all ;/
 //  But overfall im happy i made it and i hope you will enjoy it.
 
+#include "common.h"
+#include "mazegeneration.h"
 
-#include "pebble.h"
+/** //////////////////////////////////////////////////////
+    CONSTANTS
+ */
 
-#define MAX(a,b) ( (a) > (b) ? (a) : (b) )
-#define MIN(a,b) ( (a) < (b) ? (a) : (b) )
-#define ABS( a ) ( (a) < 0 ? (-a) : (a) )
+const int       kMaxSQRTSteps = 40;
+const float     kMathPi = 3.14159265358979323846264338327950288;
+const int       kFrameRate = 20; //Miliseconds
+const float     kDensity = 0.25;
+const int       kMoveVal = 1;
+const int       kAnimationSpeed = 150;
 
-const int kMaxSQRTSteps = 40;
-const float kMathPi = 3.14159265358979323846264338327950288;
-const int kFrameRate = 20; //Miliseconds
-const float kDensity = 0.25;
-const int kMoveVal = 1;
-const int kAnimationSpeed = 150;
+/** //////////////////////////////////////////////////////
+    GAME SPECIFIC
+ */
 
 char timeBuff[6] = {"00:00"};
 
-//simple 2D vector implementation
-typedef struct Vec2d {
-    float x;
-    float y;
-} Vec2d;
-
-//structure that descibes our BALL
-typedef struct Disc {
-    Vec2d pos;
-    Vec2d vel;
-    float radius;
-} Disc;
-
-static Disc ball;
-
-//////////////////////////////////////////////////////////////////////
-//PERFECT MAZE
-
-#define kMaxData 21  // 10 * 2 + 1
-#define CELL 100  // 10 * 10
-#define WALL 1
-#define PATH 0
-
-const int kMazeSize = 10;
-
-int mazeData[kMaxData][kMaxData];
+Disc ball;
+Vec2d key_pos;
+Vec2d exit_pos;
 
 float rect_w = 0;
 float rect_h = 0;
 float rect_radius = 0;
-
-Vec2d key_pos;
-Vec2d exit_pos;
-
 int frames = 0;
+int mazeData[kMaxData][kMaxData];
 
 #define STATE_FIND_KEY 1
 #define STATE_FIND_EXIT 2
 #define STATE_END 3
 
 int state = STATE_FIND_KEY;
-
 int timeSum = 0;
 
 const float kOffsetY = 26;
 const float kOffsetX = 2;
 
-//declaration
-static void init_maze(int maze[kMaxData][kMaxData]);
-static void maze_generator(int indeks, int maze[kMaxData][kMaxData], int backtrack_x[CELL], int bactrack_y[CELL], int x, int y, int n, int visited);
-static int is_closed(int maze[kMaxData][kMaxData], int x, int y);
-static void draw_maze(GContext *ctx, int maze[kMaxData][kMaxData], int maze_size);
+/** //////////////////////////////////////////////////////
+    DRAWING VARIABLES
+ */
+
+static Window *window;
+static GRect window_frame;
+static Layer *mainLayer;
+static AppTimer *timer;
+
+static TextLayer *text_layer;
+static TextLayer *text_time_layer;
+
+static TextLayer *finish_text;
+
+int finishAnimationX = 0;
+int finishAnimSize = 2;
+bool bonceBack = false;
+bool animDone = false;
+
+//////////////////////////////////////////////////////////////////////
+//DECLARATIONS
 
 static void restart(void);
+static void draw_maze(GContext *ctx, int maze[kMaxData][kMaxData], int maze_size);
+static void make_maze(void);
+static void disc_init(Disc *disc);
+static void disc_apply_force(Disc *disc, Vec2d force);
+static void disc_apply_accel(Disc *disc, AccelData accel);
+static void disc_update(Disc *disc);
+
+static void disc_layer_update_callback(Layer *me, GContext *ctx);
+static void timer_callback(void *data);
+
+//////////////////////////////////////////////////////////////////////
 
 static void make_maze(void)
 {
@@ -98,187 +102,8 @@ static void make_maze(void)
     maze_generator(indeks, mazeData, backtrack_x, backtrack_y, 1, 1, size, 1);
 }
 
-//definitions
-static void init_maze(int maze[kMaxData][kMaxData])
-{
-    for(int a = 0; a < kMaxData; a++)
-    {
-        for(int b = 0; b < kMaxData; b++)
-        {
-            if(a % 2 == 0 || b % 2 == 0)
-                maze[a][b] = 1;
-            else
-                maze[a][b] = PATH;
-        }
-    }
-}
-
-static void maze_generator(int indeks, int maze[kMaxData][kMaxData], int backtrack_x[CELL], int backtrack_y[CELL], int x, int y, int n, int visited)
-{
-    if(visited < n * n)
-    {
-        int neighbour_valid = -1;
-        int neighbour_x[4];
-        int neighbour_y[4];
-        int step[4];
-        
-        int x_next;
-        int y_next;
-        
-        if(x - 2 > 0 && is_closed(maze, x - 2, y))  // upside
-        {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x - 2;;
-            neighbour_y[neighbour_valid]=y;
-            step[neighbour_valid]=1;
-        }
-        
-        if(y - 2 > 0 && is_closed(maze, x, y - 2))  // leftside
-        {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x;
-            neighbour_y[neighbour_valid]=y - 2;
-            step[neighbour_valid]=2;
-        }
-        
-        if(y + 2 < n * 2 + 1 && is_closed(maze, x, y + 2))  // rightside
-        {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x;
-            neighbour_y[neighbour_valid]=y + 2;
-            step[neighbour_valid]=3;
-            
-        }
-        
-        if(x + 2 < n * 2 + 1 && is_closed(maze, x + 2, y))  // downside
-        {
-            neighbour_valid++;
-            neighbour_x[neighbour_valid]=x+2;
-            neighbour_y[neighbour_valid]=y;
-            step[neighbour_valid]=4;
-        }
-        
-        if(neighbour_valid == -1)
-        {
-            // backtrack
-            x_next = backtrack_x[indeks];
-            y_next = backtrack_y[indeks];
-            indeks--;
-        }
-        
-        if(neighbour_valid!=-1)
-        {
-            int randomization = neighbour_valid + 1;
-            int random = rand()%randomization;
-            x_next = neighbour_x[random];
-            y_next = neighbour_y[random];
-            indeks++;
-            backtrack_x[indeks] = x_next;
-            backtrack_y[indeks] = y_next;
-            
-            int rstep = step[random];
-            
-            if(rstep == 1)
-                maze[x_next+1][y_next] = PATH;
-            else if(rstep == 2)
-                maze[x_next][y_next + 1] = PATH;
-            else if(rstep == 3)
-                maze[x_next][y_next - 1] = PATH;
-            else if(rstep == 4)
-                maze[x_next - 1][y_next] = PATH;
-            visited++;
-        }
-        
-        maze_generator(indeks, maze, backtrack_x, backtrack_y, x_next, y_next, n, visited);
-    }
-}
-
-static int is_closed(int maze[kMaxData][kMaxData], int x, int y)
-{
-    if(maze[x - 1][y]  == WALL
-       && maze[x][y - 1] == WALL
-       && maze[x][y + 1] == WALL
-       && maze[x + 1][y] == WALL
-       )
-        return 1;
-    
-    return 0;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-static Window *window;
-static GRect window_frame;
-static Layer *mainLayer;
-static AppTimer *timer;
-
-static TextLayer *text_layer;
-static TextLayer *text_time_layer;
-
-static TextLayer *finish_text;
-
-int finishAnimationX = 0;
-int finishAnimSize = 2;
-bool bonceBack = false;
-bool animDone = false;
-
-//MATH FUNCTIONS //////////////////////////////////////////////////////
-
-static bool circlesColliding(int x1,int y1,int radius1, int x2,int y2,int radius2)
-{
-    int dx = x2 - x1;
-    int dy = y2 - y1;
-    
-    int radii = radius1 + radius2;
-    
-    if ( ( dx * dx )  + ( dy * dy ) < radii * radii )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-/*
- Test collision between Circe and Line by solving the quadratic equation
- */
-
-static int intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lineTo)
-{
-    float a = lineTo.x-lineFrom.x;
-    float b = lineTo.y-lineFrom.y;
-    float c = location.x-lineFrom.x;
-    float d = location.y-lineFrom.y;
-    float r = radius;
-    
-    bool startInside = false;
-    bool endInside = false;
-    bool middleInside = false;
-   
-    if ((d*a - c*b)*(d*a - c*b) <= r*r*(a*a + b*b)) {
-    
-        if (c*c + d*d <= r*r) {
-            startInside = true;
-        }
-        
-        if ((a-c)*(a-c) + (b-d)*(b-d) <= r*r) {
-            endInside = true;
-        }
-        
-        if (!startInside && !endInside && c*a + d*b >= 0 && c*a + d*b <= a*a + b*b) {
-            middleInside = true;
-        }
-    }
-
-    return (startInside || endInside || middleInside);
-}
-
-//SETUP CODE //////////////////////////////////////////////////////////
-
 static void disc_init(Disc *disc) {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
     
     disc->pos.x = (kMazeSize * 2 - 1) * rect_w;
     disc->pos.y = (kMazeSize * 2 + 1) * rect_h;
@@ -578,7 +403,7 @@ static void disc_layer_update_callback(Layer *me, GContext *ctx)
 static void timer_callback(void *data)
 {
     if (state != STATE_END) {
-        AccelData accel = { 0, 0, 0 };
+        AccelData accel = (AccelData){ 0, 0, 0, false, 0};
         
         accel_service_peek(&accel);
         
