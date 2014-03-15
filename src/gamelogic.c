@@ -7,6 +7,7 @@
 //
 
 #include "gamelogic.h"
+#include "textanimation.h"
 
 /** //////////////////////////////////////////////////////
  CONSTANTS
@@ -45,11 +46,6 @@ int timeSum = 0;
 const float kOffsetY = 26;
 const float kOffsetX = 2;
 
-int finishAnimationX = 0;
-int finishAnimSize = 2;
-bool bonceBack = false;
-bool animDone = false;
-
 Window *game_window;
 AppTimer *timer;
 
@@ -58,8 +54,6 @@ static Layer *mainLayer;
 
 static TextLayer *text_layer;
 static TextLayer *text_time_layer;
-
-static TextLayer *finish_text;
 
 void make_maze(void)
 {
@@ -228,6 +222,7 @@ void disc_update(Disc *disc) {
             
             vibes_long_pulse();
             
+            animation_proceed();
         }
     }
     
@@ -362,34 +357,6 @@ void disc_layer_update_callback(Layer *me, GContext *ctx)
         
         graphics_draw_circle(ctx, GPoint(exit_pos.x, exit_pos.y), exitSize);
     }
-    else if(state == STATE_END){
-        
-        if (!animDone) {
-            
-            if (bonceBack) {
-                finishAnimationX --;
-                if (finishAnimationX == 22) {
-                    animDone = true;
-                    timer = NULL;
-                    
-                    layer_add_child(mainLayer, text_layer_get_layer(finish_text));
-                }
-            }
-            else{
-                finishAnimationX ++;
-                
-                if (finishAnimationX > 40) {
-                    bonceBack = true;
-                }
-            }
-        }
-        
-        if (finishAnimSize < 100) {
-            finishAnimSize+=2;
-        }
-        
-        graphics_fill_rect(ctx, GRect(finishAnimationX, 72, finishAnimSize, 24), 5, GCornersAll);
-    }
     
 }
 
@@ -432,17 +399,12 @@ void timer_callback(void *data)
 
 void restart(void)
 {
-    layer_remove_from_parent(text_layer_get_layer(finish_text));
+    animation_reset();
     
     text_layer_set_text(text_layer, "Find Key!");
     
     light_enable(true);
-    
-    finishAnimationX = 0;
-    bonceBack = false;
-    animDone = false;
-    finishAnimSize = 2;
-    
+
     state = STATE_FIND_KEY;
     
     disc_init(&ball);
@@ -465,8 +427,8 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
     
 }
 
-void select_pop_click_handler(ClickRecognizerRef recognizer, Window *window)
-{
+void select_pop_click_handler(ClickRecognizerRef recognizer, Window *window) {
+    
     if(state == STATE_END){
         window_stack_pop(true);
     }
@@ -521,12 +483,16 @@ void window_load(Window *window) {
     
     layer_add_child(mainLayer, text_layer_get_layer(text_layer));
     layer_add_child(mainLayer, text_layer_get_layer(text_time_layer));
-    
-    finish_text  = text_layer_create(GRect(22, 74, 100, 24));
+   
+    //shift it for now we will move it later
+    finish_text  = text_layer_create(GRect(0, 74, 100, 24));
     text_layer_set_text(finish_text, "AGAIN? >>>");
     text_layer_set_text_alignment(finish_text, GTextAlignmentCenter);
     text_layer_set_text_color(finish_text, GColorWhite);
     text_layer_set_background_color(finish_text, GColorBlack);
+    layer_add_child(mainLayer, text_layer_get_layer(finish_text));
+
+    animation_reset();
     
     layer_add_child(window_layer, mainLayer);
     
@@ -547,4 +513,6 @@ void window_unload(Window *window) {
     layer_destroy(mainLayer);
     
     accel_data_service_unsubscribe();
+    
+    destroy_property_animation(&prop_animation);
 }
