@@ -29,6 +29,9 @@
 		0404881918D47C8700C1609E /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = SOURCE_ROOT; };
 		0404881A18D47CD900C1609E /* mazegeneration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mazegeneration.h; path = src/mazegeneration.h; sourceTree = SOURCE_ROOT; };
 		0404881B18D47D2500C1609E /* mazegeneration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mazegeneration.c; path = src/mazegeneration.c; sourceTree = SOURCE_ROOT; };
+		0404881D18D4921700C1609E /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = appinfo.json; sourceTree = SOURCE_ROOT; };
+		0404882018D4954B00C1609E /* menu_diter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_diter.png; sourceTree = "<group>"; };
+		0404882118D4981D00C1609E /* gyro_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gyro_icon.png; sourceTree = "<group>"; };
 		04518E8F184E1CF700BA65AF /* GyroMaze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GyroMaze.c; path = src/GyroMaze.c; sourceTree = SOURCE_ROOT; };
 		0491966D184E1B300047EA9A /* GyroMaze */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GyroMaze; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -44,6 +47,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0404881E18D4931500C1609E /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				0404881F18D4931500C1609E /* images */,
+			);
+			path = resources;
+			sourceTree = SOURCE_ROOT;
+		};
+		0404881F18D4931500C1609E /* images */ = {
+			isa = PBXGroup;
+			children = (
+				0404882118D4981D00C1609E /* gyro_icon.png */,
+				0404882018D4954B00C1609E /* menu_diter.png */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
 		04919664184E1B300047EA9A = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +83,8 @@
 		0491966F184E1B300047EA9A /* GyroMaze */ = {
 			isa = PBXGroup;
 			children = (
+				0404881E18D4931500C1609E /* resources */,
+				0404881D18D4921700C1609E /* appinfo.json */,
 				04518E8F184E1CF700BA65AF /* GyroMaze.c */,
 				0404881918D47C8700C1609E /* common.h */,
 				0404881718D47C7400C1609E /* common.c */,
