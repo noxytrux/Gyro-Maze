@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0404881818D47C7400C1609E /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = 0404881718D47C7400C1609E /* common.c */; };
 		0404881C18D47D2500C1609E /* mazegeneration.c in Sources */ = {isa = PBXBuildFile; fileRef = 0404881B18D47D2500C1609E /* mazegeneration.c */; };
+		0404882418D4EC2700C1609E /* gamelogic.c in Sources */ = {isa = PBXBuildFile; fileRef = 0404882318D4EC2700C1609E /* gamelogic.c */; };
 		04518E90184E1CF700BA65AF /* GyroMaze.c in Sources */ = {isa = PBXBuildFile; fileRef = 04518E8F184E1CF700BA65AF /* GyroMaze.c */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,8 @@
 		0404881D18D4921700C1609E /* appinfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = appinfo.json; sourceTree = SOURCE_ROOT; };
 		0404882018D4954B00C1609E /* menu_diter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_diter.png; sourceTree = "<group>"; };
 		0404882118D4981D00C1609E /* gyro_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gyro_icon.png; sourceTree = "<group>"; };
+		0404882318D4EC2700C1609E /* gamelogic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gamelogic.c; path = src/gamelogic.c; sourceTree = SOURCE_ROOT; };
+		0404882518D4EC4800C1609E /* gamelogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gamelogic.h; path = src/gamelogic.h; sourceTree = SOURCE_ROOT; };
 		04518E8F184E1CF700BA65AF /* GyroMaze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GyroMaze.c; path = src/GyroMaze.c; sourceTree = SOURCE_ROOT; };
 		0491966D184E1B300047EA9A /* GyroMaze */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GyroMaze; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -90,6 +93,8 @@
 				0404881718D47C7400C1609E /* common.c */,
 				0404881A18D47CD900C1609E /* mazegeneration.h */,
 				0404881B18D47D2500C1609E /* mazegeneration.c */,
+				0404882518D4EC4800C1609E /* gamelogic.h */,
+				0404882318D4EC2700C1609E /* gamelogic.c */,
 			);
 			path = GyroMaze;
 			sourceTree = "<group>";
@@ -145,6 +150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0404882418D4EC2700C1609E /* gamelogic.c in Sources */,
 				0404881818D47C7400C1609E /* common.c in Sources */,
 				0404881C18D47D2500C1609E /* mazegeneration.c in Sources */,
 				04518E90184E1CF700BA65AF /* GyroMaze.c in Sources */,
