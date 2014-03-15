@@ -31,7 +31,7 @@ bool circlesColliding(int x1,int y1,int radius1, int x2,int y2,int radius2)
  Test collision between Circe and Line by solving the quadratic equation
  */
 
-int intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lineTo)
+collisionside intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lineTo)
 {
     float a = lineTo.x-lineFrom.x;
     float b = lineTo.y-lineFrom.y;
@@ -39,24 +39,35 @@ int intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lin
     float d = location.y-lineFrom.y;
     float r = radius;
     
-    bool startInside = false;
-    bool endInside = false;
-    bool middleInside = false;
+    collisionside retval = noneInside;
     
     if ((d*a - c*b)*(d*a - c*b) <= r*r*(a*a + b*b)) {
         
         if (c*c + d*d <= r*r) {
-            startInside = true;
+            retval |= startInside;
+            
+            if (retval & noneInside) {
+                retval &= ~noneInside;
+            }
         }
         
         if ((a-c)*(a-c) + (b-d)*(b-d) <= r*r) {
-            endInside = true;
+            retval |= endInside;
+            
+            if (retval & noneInside) {
+                retval &= ~noneInside;
+            }
         }
         
-        if (!startInside && !endInside && c*a + d*b >= 0 && c*a + d*b <= a*a + b*b) {
-            middleInside = true;
+        if (c*a + d*b >= 0 && c*a + d*b <= a*a + b*b) {
+            retval |= middleInside;
+            
+            if (retval & noneInside) {
+                retval &= ~noneInside;
+            }
+
         }
     }
-    
-    return (startInside || endInside || middleInside);
+        
+    return retval;
 }

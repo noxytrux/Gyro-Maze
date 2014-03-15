@@ -140,8 +140,6 @@ static void disc_apply_accel(Disc *disc, AccelData accel) {
 
 static void disc_update(Disc *disc) {
     
-    int val = 1;
-    
     int mx = kMazeSize * 2 + 1;
     int my = kMazeSize * 2 + 1;
 
@@ -149,7 +147,9 @@ static void disc_update(Disc *disc) {
     disc->pos.y += disc->vel.y;
 
     Vec2d pos = disc->pos;
-    float radius = disc->radius+1;
+    float radius = disc->radius+1.5f;
+    
+    collisionside retval;
     
     for(int i = 0; i < mx; i++)
     {
@@ -161,13 +161,14 @@ static void disc_update(Disc *disc) {
                     
                     if(j < my){
                         
-                        if (intersectlinecircle(pos,
-                                                radius,
-                                                (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
-                                                (Vec2d){kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h})) {
-                          
-                            disc->pos.x += -disc->vel.x*val;
-                            //disc->vel.x = 0;
+                        retval = intersectlinecircle(pos,
+                                                     radius,
+                                                     (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
+                                                     (Vec2d){kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h});
+                        
+                        if ((retval & middleInside)) {
+                            
+                            disc->pos.x += -disc->vel.x;
                         }
                         
                     }
@@ -179,13 +180,14 @@ static void disc_update(Disc *disc) {
                     
                     if (i < mx) {
                         
-                        if (intersectlinecircle(pos,
-                                                radius,
-                                                (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
-                                                (Vec2d){kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h})) {
+                        retval = intersectlinecircle(pos,
+                                                     radius,
+                                                     (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
+                                                     (Vec2d){kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h});
+                        
+                        if ((retval & middleInside)) {
                             
-                            disc->pos.y += -disc->vel.y*val;
-                            //disc->vel.y = 0;
+                            disc->pos.y += -disc->vel.y;
                         }
                         
                     }
@@ -195,26 +197,30 @@ static void disc_update(Disc *disc) {
                 
                 if (mazeData[i+1][j] == WALL) {
                     
-                    if (intersectlinecircle(pos,
-                                            radius,
-                                            (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
-                                            (Vec2d){kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h})) {
-                       
-                        disc->pos.y += -disc->vel.y*val;
-                        //disc->vel.y = 0;
+                    retval = intersectlinecircle(pos,
+                                                 radius,
+                                                 (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
+                                                 (Vec2d){kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h});
+
+                    
+                    if ((retval & middleInside)) {
+                        
+                        disc->pos.y += -disc->vel.y;
+                        
                     }
                     
                 }
                 
                 if (mazeData[i][j+1] == WALL) {
                     
-                    if (intersectlinecircle(pos,
-                                            radius,
-                                            (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
-                                            (Vec2d){kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h})) {
+                    retval = intersectlinecircle(pos,
+                                                 radius,
+                                                 (Vec2d){kOffsetX + i*rect_w, kOffsetY + j*rect_h},
+                                                 (Vec2d){kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h});
+                    
+                    if ((retval & middleInside)) {
                         
-                        disc->pos.x += -disc->vel.x*val;
-                        //disc->vel.x = 0;
+                        disc->pos.x += -disc->vel.x;
                     }
                     
                 }
@@ -222,6 +228,8 @@ static void disc_update(Disc *disc) {
             }
         }
     }
+    
+    pos = disc->pos;
     
     if(state == STATE_FIND_KEY){
         if(circlesColliding(pos.x, pos.y, radius, key_pos.x, key_pos.y, 3)) {
@@ -264,7 +272,9 @@ static void draw_maze(GContext *ctx, int maze[kMaxData][kMaxData], int maze_size
                 if (i == (mx-1)) {
                     
                     if(j < my){
-                        graphics_draw_line(ctx, GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h), GPoint(kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h));
+                        graphics_draw_line(ctx,
+                                           GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h),
+                                           GPoint(kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h));
                     }
                     
                     continue;
@@ -273,7 +283,9 @@ static void draw_maze(GContext *ctx, int maze[kMaxData][kMaxData], int maze_size
                 if (j == (my-1)) {
                     
                     if (i < mx) {
-                        graphics_draw_line(ctx, GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h), GPoint(kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h));
+                        graphics_draw_line(ctx,
+                                           GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h),
+                                           GPoint(kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h));
                     }
                     
                     continue;
@@ -281,13 +293,17 @@ static void draw_maze(GContext *ctx, int maze[kMaxData][kMaxData], int maze_size
                 
                 if (maze[i+1][j] == WALL) {
                     
-                    graphics_draw_line(ctx, GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h), GPoint(kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h));
+                    graphics_draw_line(ctx,
+                                       GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h),
+                                       GPoint(kOffsetX + (i+1)*rect_w, kOffsetY + j*rect_h));
                     
                 }
                 
                 if (maze[i][j+1] == WALL) {
                     
-                    graphics_draw_line(ctx, GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h), GPoint(kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h));
+                    graphics_draw_line(ctx,
+                                       GPoint(kOffsetX + i*rect_w, kOffsetY + j*rect_h),
+                                       GPoint(kOffsetX + i*rect_w, kOffsetY + (j+1)*rect_h));
                 
                 }
                 
@@ -441,6 +457,8 @@ void restart(void)
 {
     layer_remove_from_parent(text_layer_get_layer(finish_text));
     
+    text_layer_set_text(text_layer, "Find Key!");
+
     light_enable(true);
     
     finishAnimationX = 0;

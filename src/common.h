@@ -27,7 +27,14 @@ typedef struct Disc {
     float radius;
 } Disc;
 
+typedef enum {
+    startInside = 1 << 1,
+    endInside = 1 << 2,
+    middleInside = 1 << 3,
+    noneInside = 1 << 4
+} collisionside;
+
 extern bool circlesColliding(int x1,int y1,int radius1, int x2,int y2,int radius2);
-extern int intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lineTo);
+extern collisionside intersectlinecircle(Vec2d location, double radius, Vec2d lineFrom, Vec2d lineTo);
 
 #endif
